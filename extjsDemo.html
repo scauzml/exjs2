@@ -122,64 +122,140 @@
             })
             //隐藏字段
             var hiddenfield = new Ext.form.Hidden({
-               name:'userid',
-               value:'1'
+                name: 'userid',
+                value: '1'
             })
 
             var datefield = new Ext.form.DateField({
-                 fieldLabel: '出生日期',
-                 format: 'Y-m-d',
-                 editable: false,
-                 allowBlank: false,
-                 blankText: '请选择日期'
-             });
+                fieldLabel: '出生日期',
+                format: 'Y-m-d',
+                editable: false,
+                allowBlank: false,
+                blankText: '请选择日期'
+            });
 
-             //单选组开始
-             var radiogroup=new Ext.form.RadioGroup({
-                 fieldLabel:'sex',
-                 width:100,
-                 items:[{
-                     name:'sex',
-                     inputValue:'0',
-                     boxLabel:'男',
-                     checked:true,
-                 },{
-                     name:'sex',
-                     inputValue:'1',
-                     boxLabel:'女'
-                 }]
-             })
-             radiogroup.on('change',function(rdgroup,checked){
+            //单选组开始
+            var radiogroup = new Ext.form.RadioGroup({
+                fieldLabel: 'sex',
+                width: 100,
+                items: [{
+                    name: 'sex',
+                    inputValue: '0',
+                    boxLabel: '男',
+                    checked: true,
+                }, {
+                    name: 'sex',
+                    inputValue: '1',
+                    boxLabel: '女'
+                }]
+            })
+            radiogroup.on('change', function (rdgroup, checked) {
                 alert(checked.getRawValue());
-             })
-             var checkboxgroup = new Ext.form.CheckboxGroup({
-                 fieldLabel: '兴趣爱好',
-                 width: 170,
-                 items: [{
-                     boxLabel: '看书',
-                     inputValue: '0'
-                 }, {
-                     boxLabel: '上网',
-                     inputValue: '1'
-                 }, {
-                     boxLabel: '听音乐',
-                     inputValue: '2'
-                 }]
-             });
-             //获取复选组的值
-             checkboxgroup.on('change', function (cbgroup, checked) {
-                 for (var i = 0; i < checked.length; i++) {
-                     alert(checked[i].getRawValue());
-                 }
-             });
+            })
+            var checkboxgroup = new Ext.form.CheckboxGroup({
+                fieldLabel: '兴趣爱好',
+                width: 170,
+                items: [{
+                    boxLabel: '看书',
+                    inputValue: '0'
+                }, {
+                    boxLabel: '上网',
+                    inputValue: '1'
+                }, {
+                    boxLabel: '听音乐',
+                    inputValue: '2'
+                }]
+            });
+            //获取复选组的值
+            checkboxgroup.on('change', function (cbgroup, checked) {
+                for (var i = 0; i < checked.length; i++) {
+                    alert(checked[i].getRawValue());
+                }
+            });
 
+            var combostore = new Ext.data.ArrayStore({
+                fields: ['id', 'name'],
+                data: [[1, '团员'], [2, '党员'], [3, '其他']]
+            })
+
+            var combobox = new Ext.form.ComboBox({
+                fieldLabel: '政治面貌',
+                store: combostore,
+                displayField: 'name',
+                valueField: 'id',
+                triggerAction: 'all',
+                emptyText: '请选择...',
+                allowBlank: false,
+                blankText: '请选择政治面貌',
+                editable: false,
+                //本地数据源，远程为remote
+                mode: 'local'
+            })
+
+            //Combobox获取值
+            combobox.on('select', function () {
+                alert(combobox.getValue());
+            })
+
+            // var combocitystore = new Ext.data.Store({
+            //     //----------------------下拉列表开始----------------------//
+            //     //创建市数据源
+
+            //     //设定读取的地址
+            //     // proxy: new Ext.data.HttpProxy({ url: '/App_Ashx/Demo/City.ashx' }),
+            //     //设定读取的格式    
+            //     reader: new Ext.data.JsonReader({ root: 'data' },
+            //         [{ name: 'id' }, { name: 'name' }])
+
+            // })
+            //创建市Combobox
+//             var comboboxcity = new Ext.form.ComboBox({
+//                 id: 'comboboxcity',
+//                 fieldLabel: '市',
+//                 width: 120,
+//                 store: combocitystore,
+//                 displayField: 'name',
+//                 valueField: 'id',
+//                 triggerAction: 'all',\  
+//                 emptyText: '请选择...',
+//                 allowBlank: false,
+//                 blankText: '请选择市',
+//                 editable: false,
+//                 mode: 'local', //该属性和以下方法为了兼容ie8
+//                 listeners: {
+//                     'render': function () {
+//                         combocitystore.load();
+//                     }
+//                 }
+//             });
+//             //创建区Combobox
+//             var comboareacity = new Ext.form.ComboBox({
+//                 fieldLabel: '区',
+//                 width: 120,
+//                 store: comboareastore,
+//                 displayField: 'name',
+//                 valueField: 'id',
+//                 triggerAction: 'all',
+//                 emptyText: '请选择...',
+//                 allowBlank: false,
+//                 blankText: '请选择区',
+//                 editable: false
+//             });
+//  //联动的实现
+//               comboboxcity.on('select', function () {
+//                   comboareastore.baseParams.id = comboboxcity.getValue();
+//                   comboareacity.setValue('');
+//                   comboareastore.load();
+//               })
+ //表单
             var form = new Ext.form.FormPanel({
                 frame: true,
                 title: '表单',
                 style: 'margin:10px',
                 bodyStyle: 'padding:6px 0px 0px 15px',
                 items: [txtusername, txtuserPassword, txtCheckCode,
-                numberField,hiddenfield,datefield,radiogroup,checkboxgroup],
+                    numberField, hiddenfield, datefield, radiogroup, checkboxgroup,
+                    combobox],
                 buttons: [btnSubmit, btnReset]
             });
             var win = new Ext.Window({
@@ -195,6 +271,7 @@
                 items: form,
 
             });
+
             win.show();
             var checkcode1 = Ext.getDom('checkcode');
             var checkImage = Ext.get(checkcode1.parentNode);
