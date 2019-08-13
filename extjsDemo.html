@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="./ext-3.3.0/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="./ext-3.3.0/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="./ext-3.3.0/resources/css/ext-all.css" />
+    <title>extjsDemo</title>
+    <style>
+        .loginicon {
+            background-image: url('./1.png') !important;
+
+        }
+
+        .x-form-unit {
+            height: 22px;
+            line-height: 22px;
+            padding-left: 2px;
+            display: inline-block;
+            display: inline;
+        }
+    </style>
+    <script type="text/javascript">
+        Ext.override(Ext.form.TextField, {
+            unitText: '',
+            onRender: function (ct, position) {
+                Ext.form.TextField.superclass.onRender.call(this, ct, position);
+                // 如果单位字符串已定义 则在后方增加单位对象   
+                if (this.unitText != '') {
+                    this.unitEl = ct.createChild({
+                        tag: 'div',
+                        html: this.unitText
+                    });
+                    this.unitEl.addClass('x-form-unit');
+                    // 增加单位名称的同时 按单位名称大小减少文本框的长度 初步考虑了中英文混排 未考虑为负的情况   
+                    this.width = this.width - (this.unitText.replace(/[^\x00-\xff]/g, "xx").length * 6 + 2);
+                    // 同时修改错误提示图标的位置   
+                    this.alignErrorIcon = function () {
+                        this.errorIcon.alignTo(this.unitEl, 'tl-tr', [2, 0]);
+                    };
+                }
+            }
+        });
+
+        Ext.onReady(function () {
+            Ext.QuickTips.init();
+            Ext.form.Field.prototype.msgTarget = 'side';
+            //----------------------重写文本框开始----------------------//
+
+
+            //handler处理的方法
+            var btnSubmitClick = function () {
+                // Ext.MessageBox.alert('tip','you have click confirm button');
+                if (form.getForm().isValid()) {
+                    Ext.Msg.alert('tip', 'success login')
+                }
+            }
+            var btnResetClick = function () {
+
+                // Ext.MessageBox.alert('tip','you have click reset button');
+                Ext.Msg.alert('tip', 'success reset')
+
+
+            }
+            //按钮注册
+            var btnSubmit = new Ext.Button({
+                text: 'commit',
+                handler: btnSubmitClick
+            });
+            var btnReset = new Ext.Button({
+                text: 'reset',
+                listeners: {
+                    'click': btnResetClick
+                }
+            });
+
+            var txtusername = new Ext.form.TextField({
+                width: 140,
+                allowBlank: false,
+                maxLength: 10,
+                name: 'user',
+                fieldLabel: '用户名称',
+                blankText: '输入用户名',
+                maxLengthText: '不超过10 个字符'
+            });
+
+            var txtuserPassword = new Ext.form.TextField({
+                width: 140,
+                allowBlank: false,
+                maxLength: 10,
+                inputType: 'password',
+                name: 'password',
+                fieldLabel: '用户密码',
+                blankText: '输入密码',
+                maxLengthText: '不超过10 个字符'
+            });
+            var txtCheckCode = new Ext.form.TextField({
+                id: 'checkcode',
+                width: 140,
+                allowBlank: false,
+                maxLength: 10,
+                inputType: 'password',
+                name: 'password',
+                fieldLabel: '验证码',
+                blankText: '输入验证码',
+                maxLengthText: '不超过10 个字符'
+            });
+            //数字字段
+            var numberField = new Ext.form.NumberField({
+                unitText: ' cm',
+                width: 80,
+                allowBlank: false,
+                decimalPrecision: 1,
+                name: 'number',
+                fieldLabel: '升高',
+                minValue: 0.01,
+                maxValue: 200,
+                blankText: '请输入身高'
+            })
+            //隐藏字段
+            var hiddenfield = new Ext.form.Hidden({
+               name:'userid',
+               value:'1'
+            })
+
+            var datefield = new Ext.form.DateField({
+                 fieldLabel: '出生日期',
+                 format: 'Y-m-d',
+                 editable: false,
+                 allowBlank: false,
+                 blankText: '请选择日期'
+             });
+
+             //单选组开始
+             var radiogroup=new Ext.form.RadioGroup({
+                 fieldLabel:'sex',
+                 width:100,
+                 items:[{
+                     name:'sex',
+                     inputValue:'0',
+                     boxLabel:'男',
+                     checked:true,
+                 },{
+                     name:'sex',
+                     inputValue:'1',
+                     boxLabel:'女'
+                 }]
+             })
+             radiogroup.on('change',function(rdgroup,checked){
+                alert(checked.getRawValue());
+             })
+             var checkboxgroup = new Ext.form.CheckboxGroup({
+                 fieldLabel: '兴趣爱好',
+                 width: 170,
+                 items: [{
+                     boxLabel: '看书',
+                     inputValue: '0'
+                 }, {
+                     boxLabel: '上网',
+                     inputValue: '1'
+                 }, {
+                     boxLabel: '听音乐',
+                     inputValue: '2'
+                 }]
+             });
+             //获取复选组的值
+             checkboxgroup.on('change', function (cbgroup, checked) {
+                 for (var i = 0; i < checked.length; i++) {
+                     alert(checked[i].getRawValue());
+                 }
+             });
+
+            var form = new Ext.form.FormPanel({
+                frame: true,
+                title: '表单',
+                style: 'margin:10px',
+                bodyStyle: 'padding:6px 0px 0px 15px',
+                items: [txtusername, txtuserPassword, txtCheckCode,
+                numberField,hiddenfield,datefield,radiogroup,checkboxgroup],
+                buttons: [btnSubmit, btnReset]
+            });
+            var win = new Ext.Window({
+                title: '窗口',
+                width: 476,
+                height: 374,
+                iconCls: 'loginicon',
+                resizable: true,
+                modal: true,
+                closable: true,
+                maximizable: true,
+                minimizable: true,
+                items: form,
+
+            });
+            win.show();
+            var checkcode1 = Ext.getDom('checkcode');
+            var checkImage = Ext.get(checkcode1.parentNode);
+            checkImage.createChild({
+                tag: 'img',
+                src: './2.png',
+                align: 'absbottom',
+                style: 'padding-left:23px;cursor:pointer;'
+            })
+        });
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
